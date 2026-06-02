@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dsavisualizer.algorithm.sorting.BubbleSort;
 import com.dsavisualizer.algorithm.sorting.InsertionSort;
+import com.dsavisualizer.algorithm.sorting.MergeSort;
 import com.dsavisualizer.algorithm.sorting.SelectionSort;
 import com.dsavisualizer.model.SortingStep;
 
@@ -31,6 +32,13 @@ public class SortingController {
     private int[] arr;
 
     private HBox barContainer;
+
+    private VBox mergeDetailsPanel;
+    private HBox leftTempContainer;
+    private HBox rightTempContainer;
+    private Label mergePhaseLabel;
+    private Label mergeRangeLabel;
+
     private Label title;
     private Label statusLabel;
     private Label iLabel;
@@ -47,6 +55,8 @@ public class SortingController {
     private int currentStepIndex = 0;
 
     private String selectedAlgorithm = "Bubble Sort";
+
+    private SortingStep currentVisibleStep;
 
     public Scene createSortingScene(Stage stage) {
 
@@ -65,7 +75,8 @@ public class SortingController {
         algorithmBox.getItems().addAll(
                 "Bubble Sort",
                 "Selection Sort",
-                "Insertion Sort"
+                "Insertion Sort",
+                "Merge Sort"
         );
         algorithmBox.setValue("Bubble Sort");
         algorithmBox.setPrefWidth(250);
@@ -75,7 +86,7 @@ public class SortingController {
         codeArea.setEditable(false);
         codeArea.setWrapText(false);
         codeArea.setPrefWidth(360);
-        codeArea.setPrefHeight(520);
+        codeArea.setPrefHeight(560);
         codeArea.setText(getAlgorithmCode(selectedAlgorithm));
         codeArea.setStyle(
                 "-fx-font-family: 'Consolas';" +
@@ -98,13 +109,13 @@ public class SortingController {
         backBtn.setStyle("-fx-font-size: 14px;");
 
         statusLabel = new Label("Select algorithm, enter array and click Generate Array");
-        statusLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: black;");
+        statusLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: black;");
 
         iLabel = new Label("i = -");
         jLabel = new Label("j = -");
 
-        iLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: green;");
-        jLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: orange;");
+        iLabel.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: green;");
+        jLabel.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: orange;");
 
         HBox pointerBox = new HBox(30);
         pointerBox.setAlignment(Pos.CENTER);
@@ -130,11 +141,12 @@ public class SortingController {
 
         barContainer = new HBox(12);
         barContainer.setAlignment(Pos.BOTTOM_CENTER);
-        barContainer.setPrefHeight(380);
+        barContainer.setPrefHeight(150);
         barContainer.setMinWidth(650);
 
-        generateBtn.setOnAction(e -> generateArrayFromInput());
+        createMergeDetailsPanel();
 
+        generateBtn.setOnAction(e -> generateArrayFromInput());
         startBtn.setOnAction(e -> startSortingVisualization());
 
         backBtn.setOnAction(e -> {
@@ -175,10 +187,10 @@ public class SortingController {
         codePanel.setMaxWidth(380);
         codePanel.getChildren().addAll(codeTitle, codeArea);
 
-        VBox visualPanel = new VBox(15);
+        VBox visualPanel = new VBox(10);
         visualPanel.setAlignment(Pos.TOP_CENTER);
         visualPanel.setPadding(new Insets(10));
-        visualPanel.setPrefWidth(760);
+        visualPanel.setPrefWidth(880);
         visualPanel.getChildren().addAll(
                 algorithmBoxContainer,
                 inputInfo,
@@ -187,23 +199,76 @@ public class SortingController {
                 pointerBox,
                 speedBox,
                 statusLabel,
+                mergeDetailsPanel,
                 barContainer
         );
 
-        HBox mainContent = new HBox(45);
+        HBox mainContent = new HBox(35);
         mainContent.setAlignment(Pos.TOP_CENTER);
         mainContent.getChildren().addAll(codePanel, visualPanel);
 
-        VBox root = new VBox(15);
+        VBox root = new VBox(12);
         root.setAlignment(Pos.TOP_CENTER);
-        root.setPadding(new Insets(20));
+        root.setPadding(new Insets(15));
         root.setStyle("-fx-background-color: white;");
         root.getChildren().addAll(
                 title,
                 mainContent
         );
 
-        return new Scene(root, 1250, 720);
+        return new Scene(root, 1380, 780);
+    }
+
+    private void createMergeDetailsPanel() {
+
+        mergePhaseLabel = new Label("");
+        mergePhaseLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2b2d42;");
+
+        mergeRangeLabel = new Label("");
+        mergeRangeLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: black;");
+
+        Label leftTitle = new Label("Left Temp Array");
+        leftTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: purple;");
+
+        Label rightTitle = new Label("Right Temp Array");
+        rightTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: orange;");
+
+        leftTempContainer = new HBox(8);
+        leftTempContainer.setAlignment(Pos.CENTER);
+
+        rightTempContainer = new HBox(8);
+        rightTempContainer.setAlignment(Pos.CENTER);
+
+        VBox leftBox = new VBox(4);
+        leftBox.setAlignment(Pos.CENTER);
+        leftBox.getChildren().addAll(leftTitle, leftTempContainer);
+
+        VBox rightBox = new VBox(4);
+        rightBox.setAlignment(Pos.CENTER);
+        rightBox.getChildren().addAll(rightTitle, rightTempContainer);
+
+        HBox tempArraysBox = new HBox(35);
+        tempArraysBox.setAlignment(Pos.CENTER);
+        tempArraysBox.getChildren().addAll(leftBox, rightBox);
+
+        mergeDetailsPanel = new VBox(7);
+        mergeDetailsPanel.setAlignment(Pos.CENTER);
+        mergeDetailsPanel.setPadding(new Insets(8));
+        mergeDetailsPanel.setStyle(
+                "-fx-border-color: #d9d9d9;" +
+                        "-fx-border-radius: 8;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-background-color: #f8f8f8;"
+        );
+
+        mergeDetailsPanel.getChildren().addAll(
+                mergePhaseLabel,
+                mergeRangeLabel,
+                tempArraysBox
+        );
+
+        mergeDetailsPanel.setVisible(false);
+        mergeDetailsPanel.setManaged(false);
     }
 
     private void generateArrayFromInput() {
@@ -241,12 +306,14 @@ public class SortingController {
 
             currentStepIndex = 0;
             steps = null;
+            currentVisibleStep = null;
 
             iLabel.setText("i = -");
             jLabel.setText("j = -");
 
             statusLabel.setText("Array Generated. Size = " + arr.length + " | Algorithm = " + selectedAlgorithm);
 
+            clearMergeDetails();
             drawBars(arr, -1, -1, -1, -1);
 
         } catch (NumberFormatException ex) {
@@ -276,6 +343,11 @@ public class SortingController {
             InsertionSort insertionSort = new InsertionSort();
             steps = insertionSort.generateSteps(arr);
 
+        } else if (selectedAlgorithm.equals("Merge Sort")) {
+
+            MergeSort mergeSort = new MergeSort();
+            steps = mergeSort.generateSteps(arr);
+
         } else {
 
             statusLabel.setText("This algorithm is not added yet");
@@ -302,6 +374,13 @@ public class SortingController {
                 int[] sortedArray = lastStep.getArrayState();
 
                 arr = sortedArray;
+                currentVisibleStep = lastStep;
+
+                if (selectedAlgorithm.equals("Merge Sort")) {
+                    drawMergeDetails(lastStep);
+                } else {
+                    clearMergeDetails();
+                }
 
                 drawBars(sortedArray, -1, -1, -1, lastStep.getSortedStartIndex());
             }
@@ -310,6 +389,7 @@ public class SortingController {
         }
 
         SortingStep step = steps.get(currentStepIndex);
+        currentVisibleStep = step;
 
         int[] currentArray = step.getArrayState();
         arr = currentArray;
@@ -317,13 +397,13 @@ public class SortingController {
         int i = step.getI();
         int j = step.getJ();
 
-        iLabel.setText(i == -1 ? "i = done" : "i = " + i);
-        jLabel.setText(j == -1 ? "j = done" : "j = " + j);
-
         int compareIndex1;
         int compareIndex2;
 
         if (selectedAlgorithm.equals("Bubble Sort")) {
+
+            iLabel.setText(i == -1 ? "i = done" : "i = " + i);
+            jLabel.setText(j == -1 ? "j = done" : "j = " + j);
 
             compareIndex1 = j;
             compareIndex2 = -1;
@@ -332,21 +412,41 @@ public class SortingController {
                 compareIndex2 = j + 1;
             }
 
+            clearMergeDetails();
             updateBubbleSortStatus(step, i, j);
 
         } else if (selectedAlgorithm.equals("Selection Sort")) {
 
+            iLabel.setText(i == -1 ? "i = done" : "i = " + i);
+            jLabel.setText(j == -1 ? "j = done" : "j = " + j);
+
             compareIndex1 = i;
             compareIndex2 = j;
 
+            clearMergeDetails();
             updateSelectionSortStatus(step, i, j);
 
         } else if (selectedAlgorithm.equals("Insertion Sort")) {
 
+            iLabel.setText(i == -1 ? "i = done" : "i = " + i);
+            jLabel.setText(j == -1 ? "j = done" : "j = " + j);
+
             compareIndex1 = i;
             compareIndex2 = j;
 
+            clearMergeDetails();
             updateInsertionSortStatus(step, i, j);
+
+        } else if (selectedAlgorithm.equals("Merge Sort")) {
+
+            iLabel.setText(step.getLeft() == -1 ? "left = -" : "left = " + step.getLeft());
+            jLabel.setText(step.getRight() == -1 ? "right = -" : "right = " + step.getRight());
+
+            compareIndex1 = i;
+            compareIndex2 = j;
+
+            drawMergeDetails(step);
+            updateMergeSortStatus(step);
 
         } else {
 
@@ -424,6 +524,177 @@ public class SortingController {
         }
     }
 
+    private void updateMergeSortStatus(SortingStep step) {
+
+        String phase = step.getPhase();
+
+        if (phase.equals("START")) {
+            statusLabel.setText("Merge Sort Started → First divide array into smaller parts");
+        } else if (phase.equals("DIVIDE")) {
+            statusLabel.setText(
+                    "Divide phase → Range " + step.getLeft() +
+                            " to " + step.getRight() +
+                            ", mid = " + step.getMid()
+            );
+        } else if (phase.equals("SINGLE")) {
+            statusLabel.setText(
+                    "Single element reached → index " + step.getLeft() +
+                            " is already sorted"
+            );
+        } else if (phase.equals("MERGE_START")) {
+            statusLabel.setText(
+                    "Merge phase started → Merging range " +
+                            step.getLeft() + " to " + step.getRight()
+            );
+        } else if (phase.equals("COMPARE")) {
+            statusLabel.setText(
+                    "Compare phase → comparing original index " +
+                            step.getI() + " and " + step.getJ()
+            );
+        } else if (phase.equals("WRITE_LEFT")) {
+            statusLabel.setText(
+                    "Write phase → left value is smaller, writing at index " +
+                            step.getWriteIndex()
+            );
+        } else if (phase.equals("WRITE_RIGHT")) {
+            statusLabel.setText(
+                    "Write phase → right value is smaller, writing at index " +
+                            step.getWriteIndex()
+            );
+        } else if (phase.equals("COPY_LEFT")) {
+            statusLabel.setText(
+                    "Copy leftover → copying remaining left value at index " +
+                            step.getWriteIndex()
+            );
+        } else if (phase.equals("COPY_RIGHT")) {
+            statusLabel.setText(
+                    "Copy leftover → copying remaining right value at index " +
+                            step.getWriteIndex()
+            );
+        } else if (phase.equals("MERGED")) {
+            statusLabel.setText(
+                    "Merged successfully → range " +
+                            step.getLeft() + " to " + step.getRight() +
+                            " is sorted now"
+            );
+        } else if (phase.equals("DONE")) {
+            statusLabel.setText("Merge Sort Completed");
+        } else {
+            statusLabel.setText("Merge Sort Running");
+        }
+    }
+
+    private void drawMergeDetails(SortingStep step) {
+
+        if (!selectedAlgorithm.equals("Merge Sort")) {
+            clearMergeDetails();
+            return;
+        }
+
+        mergeDetailsPanel.setVisible(true);
+        mergeDetailsPanel.setManaged(true);
+
+        mergePhaseLabel.setText("Phase: " + step.getPhase());
+
+        if (step.getLeft() != -1 && step.getRight() != -1) {
+            mergeRangeLabel.setText(
+                    "Current Range: left = " + step.getLeft() +
+                            ", mid = " + step.getMid() +
+                            ", right = " + step.getRight() +
+                            ", write index = " + step.getWriteIndex()
+            );
+        } else {
+            mergeRangeLabel.setText("Current Range: -");
+        }
+
+        drawTempArray(leftTempContainer, step.getLeftTempArray(), step.getLeftPointer(), true);
+        drawTempArray(rightTempContainer, step.getRightTempArray(), step.getRightPointer(), false);
+    }
+
+    private void clearMergeDetails() {
+
+        if (mergeDetailsPanel != null) {
+            mergeDetailsPanel.setVisible(false);
+            mergeDetailsPanel.setManaged(false);
+        }
+
+        if (leftTempContainer != null) {
+            leftTempContainer.getChildren().clear();
+        }
+
+        if (rightTempContainer != null) {
+            rightTempContainer.getChildren().clear();
+        }
+
+        if (mergePhaseLabel != null) {
+            mergePhaseLabel.setText("");
+        }
+
+        if (mergeRangeLabel != null) {
+            mergeRangeLabel.setText("");
+        }
+    }
+
+    private void drawTempArray(HBox container, int[] tempArray, int pointer, boolean isLeftArray) {
+
+        container.getChildren().clear();
+
+        if (tempArray == null || tempArray.length == 0) {
+            Label emptyLabel = new Label("Not created yet");
+            emptyLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: gray;");
+            container.getChildren().add(emptyLabel);
+            return;
+        }
+
+        for (int index = 0; index < tempArray.length; index++) {
+
+            VBox box = new VBox(3);
+            box.setAlignment(Pos.CENTER);
+
+            Label value = new Label(String.valueOf(tempArray[index]));
+            value.setAlignment(Pos.CENTER);
+            value.setMinSize(34, 28);
+
+            if (index == pointer) {
+                value.setStyle(
+                        "-fx-font-size: 13px;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-color: #ef233c;" +
+                                "-fx-border-color: black;" +
+                                "-fx-border-width: 1;"
+                );
+            } else if (isLeftArray) {
+                value.setStyle(
+                        "-fx-font-size: 13px;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-color: #6a4c93;" +
+                                "-fx-border-color: black;" +
+                                "-fx-border-width: 1;"
+                );
+            } else {
+                value.setStyle(
+                        "-fx-font-size: 13px;" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-color: #f77f00;" +
+                                "-fx-border-color: black;" +
+                                "-fx-border-width: 1;"
+                );
+            }
+
+            Label idx = new Label("t" + index);
+            idx.setStyle("-fx-font-size: 10px; -fx-text-fill: black;");
+
+            Label pointerLabel = new Label(index == pointer ? "↑" : " ");
+            pointerLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: red;");
+
+            box.getChildren().addAll(value, idx, pointerLabel);
+            container.getChildren().add(box);
+        }
+    }
+
     private void drawBars(
             int[] currentArray,
             int compareIndex1,
@@ -459,16 +730,31 @@ public class SortingController {
             Label valueLabel = new Label(String.valueOf(currentArray[k]));
             valueLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: black;");
 
-            double barHeight = ((double) currentArray[k] / maxValue) * 230;
+            double barHeight = ((double) currentArray[k] / maxValue) * 120;
 
             Rectangle bar = new Rectangle(barWidth, barHeight);
 
-            if (k == compareIndex1 || k == compareIndex2) {
-                bar.setFill(Color.ORANGE);
-            } else if (isSortedIndex(k, sortedStartIndex)) {
-                bar.setFill(Color.GREEN);
+            if (selectedAlgorithm.equals("Merge Sort")) {
+
+                if (currentVisibleStep != null && k == currentVisibleStep.getWriteIndex()) {
+                    bar.setFill(Color.LIMEGREEN);
+                } else if (k == compareIndex1 || k == compareIndex2) {
+                    bar.setFill(Color.ORANGE);
+                } else if (isInsideMergeRange(k)) {
+                    bar.setFill(Color.MEDIUMPURPLE);
+                } else {
+                    bar.setFill(Color.DARKBLUE);
+                }
+
             } else {
-                bar.setFill(Color.DARKBLUE);
+
+                if (k == compareIndex1 || k == compareIndex2) {
+                    bar.setFill(Color.ORANGE);
+                } else if (isSortedIndex(k, sortedStartIndex)) {
+                    bar.setFill(Color.GREEN);
+                } else {
+                    bar.setFill(Color.DARKBLUE);
+                }
             }
 
             Label indexLabel = new Label("idx " + k);
@@ -483,6 +769,8 @@ public class SortingController {
                     pointerLabel.setText("min ↑");
                 } else if (selectedAlgorithm.equals("Insertion Sort")) {
                     pointerLabel.setText("key ↑");
+                } else if (selectedAlgorithm.equals("Merge Sort")) {
+                    pointerLabel.setText("L ↑");
                 } else {
                     pointerLabel.setText("j ↑");
                 }
@@ -495,26 +783,56 @@ public class SortingController {
                     pointerLabel.setText("check ↑");
                 } else if (selectedAlgorithm.equals("Insertion Sort")) {
                     pointerLabel.setText("check ↑");
+                } else if (selectedAlgorithm.equals("Merge Sort")) {
+                    pointerLabel.setText("R ↑");
                 } else {
                     pointerLabel.setText("j+1 ↑");
                 }
 
                 pointerLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: red;");
 
-            } else if (currentI != -1 && k == currentI) {
+            } else if (selectedAlgorithm.equals("Merge Sort")
+                    && currentVisibleStep != null
+                    && k == currentVisibleStep.getWriteIndex()) {
+
+                pointerLabel.setText("write ↑");
+                pointerLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: green;");
+
+            } else if (currentI != -1 && k == currentI && !selectedAlgorithm.equals("Merge Sort")) {
 
                 pointerLabel.setText("i ↑");
                 pointerLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: green;");
 
-            } else if (isSortedIndex(k, sortedStartIndex)) {
+            } else if (!selectedAlgorithm.equals("Merge Sort") && isSortedIndex(k, sortedStartIndex)) {
 
                 pointerLabel.setText("sorted");
                 pointerLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: green;");
+
+            } else if (selectedAlgorithm.equals("Merge Sort") && isInsideMergeRange(k)) {
+
+                pointerLabel.setText("range");
+                pointerLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: purple;");
             }
 
             barBox.getChildren().addAll(valueLabel, bar, indexLabel, pointerLabel);
             barContainer.getChildren().add(barBox);
         }
+    }
+
+    private boolean isInsideMergeRange(int index) {
+
+        if (currentVisibleStep == null) {
+            return false;
+        }
+
+        int left = currentVisibleStep.getLeft();
+        int right = currentVisibleStep.getRight();
+
+        if (left == -1 || right == -1) {
+            return false;
+        }
+
+        return index >= left && index <= right;
     }
 
     private boolean isSortedIndex(int index, int sortedStartIndex) {
@@ -542,9 +860,12 @@ public class SortingController {
 
         currentStepIndex = 0;
         steps = null;
+        currentVisibleStep = null;
 
         iLabel.setText("i = -");
         jLabel.setText("j = -");
+
+        clearMergeDetails();
 
         if (arr != null && arr.length > 0) {
             drawBars(arr, -1, -1, -1, -1);
@@ -563,6 +884,10 @@ public class SortingController {
 
         if (algorithmName.equals("Insertion Sort")) {
             return getInsertionSortCode();
+        }
+
+        if (algorithmName.equals("Merge Sort")) {
+            return getMergeSortCode();
         }
 
         return "Code logic not added yet.";
@@ -628,6 +953,76 @@ for (int i = 1; i < n; i++) {
     }
 
     arr[j + 1] = key;
+}
+""";
+    }
+
+    private String getMergeSortCode() {
+
+        return """
+Merge Sort Logic:
+
+Variables:
+
+left  = current range ka starting index
+right = current range ka ending index
+mid   = middle index
+
+i = left temp array ka pointer
+j = right temp array ka pointer
+k = original array me write pointer
+
+Divide:
+
+if (left >= right) {
+    return;
+}
+
+mid = left + (right - left) / 2;
+
+left part  = left to mid
+right part = mid + 1 to right
+
+Merge:
+
+leftSize  = mid - left + 1;
+rightSize = right - mid;
+
+for (int x = 0; x < leftSize; x++) {
+    leftArray[x] = arr[left + x];
+}
+
+for (int y = 0; y < rightSize; y++) {
+    rightArray[y] = arr[mid + 1 + y];
+}
+
+int i = 0;
+int j = 0;
+int k = left;
+
+while (i < leftSize && j < rightSize) {
+
+    if (leftArray[i] <= rightArray[j]) {
+        arr[k] = leftArray[i];
+        i++;
+    } else {
+        arr[k] = rightArray[j];
+        j++;
+    }
+
+    k++;
+}
+
+while (i < leftSize) {
+    arr[k] = leftArray[i];
+    i++;
+    k++;
+}
+
+while (j < rightSize) {
+    arr[k] = rightArray[j];
+    j++;
+    k++;
 }
 """;
     }

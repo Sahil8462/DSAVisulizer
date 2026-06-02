@@ -62,24 +62,29 @@ public class HomeController {
     }
 
     private Button createMenuButton(String text) {
+
         Button button = new Button(text);
+
         button.setPrefSize(220, 90);
         button.setStyle(
                 "-fx-font-size: 16px;" +
-                "-fx-font-weight: bold;" +
-                "-fx-background-radius: 15;" +
-                "-fx-border-radius: 15;" +
-                "-fx-background-color: #2b2d42;" +
-                "-fx-text-fill: white;" +
-                "-fx-cursor: hand;"
+                        "-fx-font-weight: bold;" +
+                        "-fx-background-radius: 15;" +
+                        "-fx-border-radius: 15;" +
+                        "-fx-background-color: #2b2d42;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-cursor: hand;"
         );
+
         return button;
     }
 
-  private void openSorting(Stage stage) {
-    SortingController sortingController = new SortingController();
-    stage.setScene(sortingController.createSortingScene(stage));
-}
+    private void openSorting(Stage stage) {
+
+        SortingController sortingController = new SortingController();
+        Scene sortingScene = sortingController.createSortingScene(stage);
+        stage.setScene(sortingScene);
+    }
 
     private void openSearching() {
         System.out.println("Searching Visualizer Opened");
