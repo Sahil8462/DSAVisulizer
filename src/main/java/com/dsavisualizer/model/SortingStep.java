@@ -25,7 +25,12 @@ public class SortingStep {
     private int swapIndex1;
     private int swapIndex2;
 
+    private int heapSize;
+    private int rootIndex;
+    private int childIndex;
+
     public SortingStep(int[] arrayState, int i, int j, boolean swapped, int sortedStartIndex) {
+
         this.arrayState = arrayState;
         this.i = i;
         this.j = j;
@@ -48,6 +53,87 @@ public class SortingStep {
         this.partitionIndex = -1;
         this.swapIndex1 = -1;
         this.swapIndex2 = -1;
+
+        this.heapSize = -1;
+        this.rootIndex = -1;
+        this.childIndex = -1;
+    }
+
+    public SortingStep(
+            int[] arrayState,
+            int i,
+            int j,
+            boolean swapped,
+            int sortedStartIndex,
+            String phase
+    ) {
+
+        this.arrayState = arrayState;
+        this.i = i;
+        this.j = j;
+        this.swapped = swapped;
+        this.sortedStartIndex = sortedStartIndex;
+
+        this.left = -1;
+        this.mid = -1;
+        this.right = -1;
+        this.k = -1;
+
+        this.phase = phase;
+        this.leftTempArray = null;
+        this.rightTempArray = null;
+        this.leftPointer = -1;
+        this.rightPointer = -1;
+        this.writeIndex = -1;
+
+        this.pivotIndex = -1;
+        this.partitionIndex = -1;
+        this.swapIndex1 = -1;
+        this.swapIndex2 = -1;
+
+        this.heapSize = sortedStartIndex;
+        this.rootIndex = i;
+        this.childIndex = j;
+    }
+
+    public SortingStep(
+            int[] arrayState,
+            int i,
+            int j,
+            boolean swapped,
+            int sortedStartIndex,
+            int heapSize,
+            int rootIndex,
+            int childIndex,
+            String phase
+    ) {
+
+        this.arrayState = arrayState;
+        this.i = i;
+        this.j = j;
+        this.swapped = swapped;
+        this.sortedStartIndex = sortedStartIndex;
+
+        this.left = -1;
+        this.mid = -1;
+        this.right = -1;
+        this.k = -1;
+
+        this.phase = phase;
+        this.leftTempArray = null;
+        this.rightTempArray = null;
+        this.leftPointer = -1;
+        this.rightPointer = -1;
+        this.writeIndex = -1;
+
+        this.pivotIndex = -1;
+        this.partitionIndex = -1;
+        this.swapIndex1 = -1;
+        this.swapIndex2 = -1;
+
+        this.heapSize = heapSize;
+        this.rootIndex = rootIndex;
+        this.childIndex = childIndex;
     }
 
     public SortingStep(
@@ -67,6 +153,7 @@ public class SortingStep {
             int rightPointer,
             int writeIndex
     ) {
+
         this.arrayState = arrayState;
         this.i = i;
         this.j = j;
@@ -89,6 +176,10 @@ public class SortingStep {
         this.partitionIndex = -1;
         this.swapIndex1 = -1;
         this.swapIndex2 = -1;
+
+        this.heapSize = -1;
+        this.rootIndex = -1;
+        this.childIndex = -1;
     }
 
     public SortingStep(
@@ -103,6 +194,7 @@ public class SortingStep {
             boolean swapped,
             String phase
     ) {
+
         this.arrayState = arrayState;
 
         this.i = partitionIndex;
@@ -126,6 +218,10 @@ public class SortingStep {
         this.partitionIndex = partitionIndex;
         this.swapIndex1 = swapIndex1;
         this.swapIndex2 = swapIndex2;
+
+        this.heapSize = -1;
+        this.rootIndex = -1;
+        this.childIndex = -1;
     }
 
     public int[] getArrayState() {
@@ -202,5 +298,17 @@ public class SortingStep {
 
     public int getSwapIndex2() {
         return swapIndex2;
+    }
+
+    public int getHeapSize() {
+        return heapSize;
+    }
+
+    public int getRootIndex() {
+        return rootIndex;
+    }
+
+    public int getChildIndex() {
+        return childIndex;
     }
 }

@@ -3,6 +3,7 @@ package com.dsavisualizer.controller;
 import java.util.List;
 
 import com.dsavisualizer.algorithm.sorting.BubbleSort;
+import com.dsavisualizer.algorithm.sorting.HeapSort;
 import com.dsavisualizer.algorithm.sorting.InsertionSort;
 import com.dsavisualizer.algorithm.sorting.MergeSort;
 import com.dsavisualizer.algorithm.sorting.QuickSort;
@@ -20,9 +21,13 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -33,6 +38,10 @@ public class SortingController {
     private int[] arr;
 
     private HBox barContainer;
+
+    private VBox heapTreeBox;
+    private Pane heapTreePane;
+    private Label heapTreeTitle;
 
     private VBox mergeDetailsPanel;
     private HBox leftTempContainer;
@@ -78,7 +87,8 @@ public class SortingController {
                 "Selection Sort",
                 "Insertion Sort",
                 "Merge Sort",
-                "Quick Sort"
+                "Quick Sort",
+                "Heap Sort"
         );
         algorithmBox.setValue("Bubble Sort");
         algorithmBox.setPrefWidth(250);
@@ -147,6 +157,7 @@ public class SortingController {
         barContainer.setMinWidth(650);
 
         createMergeDetailsPanel();
+        createHeapTreePanel();
 
         generateBtn.setOnAction(e -> generateArrayFromInput());
         startBtn.setOnAction(e -> startSortingVisualization());
@@ -202,7 +213,8 @@ public class SortingController {
                 speedBox,
                 statusLabel,
                 mergeDetailsPanel,
-                barContainer
+                barContainer,
+                heapTreeBox
         );
 
         HBox mainContent = new HBox(35);
@@ -216,6 +228,30 @@ public class SortingController {
         root.getChildren().addAll(title, mainContent);
 
         return new Scene(root, 1380, 780);
+    }
+
+    private void createHeapTreePanel() {
+
+        heapTreeTitle = new Label("Heap Tree Visualization");
+        heapTreeTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: black;");
+
+        heapTreePane = new Pane();
+        heapTreePane.setPrefSize(780, 260);
+        heapTreePane.setMinSize(780, 260);
+        heapTreePane.setMaxSize(780, 260);
+        heapTreePane.setStyle(
+                "-fx-background-color: #f8f8f8;" +
+                        "-fx-border-color: #d9d9d9;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-background-radius: 10;"
+        );
+
+        heapTreeBox = new VBox(8);
+        heapTreeBox.setAlignment(Pos.CENTER);
+        heapTreeBox.getChildren().addAll(heapTreeTitle, heapTreePane);
+
+        heapTreeBox.setVisible(false);
+        heapTreeBox.setManaged(false);
     }
 
     private void createMergeDetailsPanel() {
@@ -313,6 +349,13 @@ public class SortingController {
             statusLabel.setText("Array Generated. Size = " + arr.length + " | Algorithm = " + selectedAlgorithm);
 
             clearMergeDetails();
+
+            if (selectedAlgorithm.equals("Heap Sort")) {
+                drawHeapTree(arr, -1, -1, -1);
+            } else {
+                clearHeapTree();
+            }
+
             drawBars(arr, -1, -1, -1, -1);
 
         } catch (NumberFormatException ex) {
@@ -352,6 +395,11 @@ public class SortingController {
             QuickSort quickSort = new QuickSort();
             steps = quickSort.generateSteps(arr);
 
+        } else if (selectedAlgorithm.equals("Heap Sort")) {
+
+            HeapSort heapSort = new HeapSort();
+            steps = heapSort.generateSteps(arr);
+
         } else {
             statusLabel.setText("This algorithm is not added yet");
             return;
@@ -385,6 +433,12 @@ public class SortingController {
                     clearMergeDetails();
                 }
 
+                if (selectedAlgorithm.equals("Heap Sort")) {
+                    drawHeapTree(sortedArray, -1, -1, lastStep.getSortedStartIndex());
+                } else {
+                    clearHeapTree();
+                }
+
                 drawBars(sortedArray, -1, -1, -1, lastStep.getSortedStartIndex());
             }
 
@@ -416,6 +470,7 @@ public class SortingController {
             }
 
             clearMergeDetails();
+            clearHeapTree();
             updateBubbleSortStatus(step, i, j);
 
         } else if (selectedAlgorithm.equals("Selection Sort")) {
@@ -427,6 +482,7 @@ public class SortingController {
             compareIndex2 = j;
 
             clearMergeDetails();
+            clearHeapTree();
             updateSelectionSortStatus(step, i, j);
 
         } else if (selectedAlgorithm.equals("Insertion Sort")) {
@@ -438,6 +494,7 @@ public class SortingController {
             compareIndex2 = j;
 
             clearMergeDetails();
+            clearHeapTree();
             updateInsertionSortStatus(step, i, j);
 
         } else if (selectedAlgorithm.equals("Merge Sort")) {
@@ -448,6 +505,7 @@ public class SortingController {
             compareIndex1 = i;
             compareIndex2 = j;
 
+            clearHeapTree();
             drawMergeDetails(step);
             updateMergeSortStatus(step);
 
@@ -460,7 +518,20 @@ public class SortingController {
             compareIndex2 = step.getJ();
 
             clearMergeDetails();
+            clearHeapTree();
             updateQuickSortStatus(step);
+
+        } else if (selectedAlgorithm.equals("Heap Sort")) {
+
+            iLabel.setText(i == -1 ? "root = -" : "root = " + i);
+            jLabel.setText(j == -1 ? "child = -" : "child = " + j);
+
+            compareIndex1 = i;
+            compareIndex2 = j;
+
+            clearMergeDetails();
+            drawHeapTree(currentArray, compareIndex1, compareIndex2, step.getSortedStartIndex());
+            updateHeapSortStatus(step);
 
         } else {
 
@@ -479,6 +550,189 @@ public class SortingController {
         });
 
         pause.play();
+    }
+
+    private void drawHeapTree(int[] currentArray, int rootIndex, int childIndex, int sortedStartIndex) {
+
+        if (heapTreeBox == null || heapTreePane == null) {
+            return;
+        }
+
+        heapTreeBox.setVisible(true);
+        heapTreeBox.setManaged(true);
+
+        heapTreePane.getChildren().clear();
+
+        if (currentArray == null || currentArray.length == 0) {
+            return;
+        }
+
+        double paneWidth = heapTreePane.getPrefWidth();
+        double startY = 35;
+        double levelGap = 65;
+        double nodeRadius = 20;
+
+        double[] xPositions = new double[currentArray.length];
+        double[] yPositions = new double[currentArray.length];
+
+        for (int index = 0; index < currentArray.length; index++) {
+
+            int level = getHeapLevel(index);
+            int firstIndexOfLevel = (int) Math.pow(2, level) - 1;
+            int positionInLevel = index - firstIndexOfLevel;
+            int totalNodesInLevel = (int) Math.pow(2, level);
+
+            double sectionWidth = paneWidth / totalNodesInLevel;
+
+            double x = sectionWidth * positionInLevel + sectionWidth / 2;
+            double y = startY + level * levelGap;
+
+            xPositions[index] = x;
+            yPositions[index] = y;
+        }
+
+        for (int child = 1; child < currentArray.length; child++) {
+
+            int parent = (child - 1) / 2;
+
+            Line line = new Line(
+                    xPositions[parent],
+                    yPositions[parent] + nodeRadius,
+                    xPositions[child],
+                    yPositions[child] - nodeRadius
+            );
+
+            line.setStroke(Color.GRAY);
+            line.setStrokeWidth(2);
+
+            heapTreePane.getChildren().add(line);
+        }
+
+        for (int index = 0; index < currentArray.length; index++) {
+
+            Circle node = new Circle(xPositions[index], yPositions[index], nodeRadius);
+
+            if (sortedStartIndex != -1 && index >= sortedStartIndex) {
+                node.setFill(Color.LIMEGREEN);
+            } else if (index == rootIndex) {
+                node.setFill(Color.ORANGE);
+            } else if (index == childIndex) {
+                node.setFill(Color.RED);
+            } else {
+                node.setFill(Color.DARKBLUE);
+            }
+
+            node.setStroke(Color.BLACK);
+            node.setStrokeWidth(1.5);
+
+            Text valueText = new Text(String.valueOf(currentArray[index]));
+            valueText.setFill(Color.WHITE);
+            valueText.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+            valueText.setX(xPositions[index] - 7);
+            valueText.setY(yPositions[index] + 5);
+
+            Text indexText = new Text("idx " + index);
+            indexText.setFill(Color.BLACK);
+            indexText.setStyle("-fx-font-size: 10px;");
+            indexText.setX(xPositions[index] - 13);
+            indexText.setY(yPositions[index] + 35);
+
+            Text roleText = new Text("");
+
+            if (index == rootIndex) {
+                roleText.setText("root");
+                roleText.setFill(Color.ORANGE);
+            } else if (index == childIndex) {
+                roleText.setText("child");
+                roleText.setFill(Color.RED);
+            } else if (sortedStartIndex != -1 && index >= sortedStartIndex) {
+                roleText.setText("sorted");
+                roleText.setFill(Color.GREEN);
+            }
+
+            roleText.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
+            roleText.setX(xPositions[index] - 15);
+            roleText.setY(yPositions[index] + 50);
+
+            heapTreePane.getChildren().addAll(node, valueText, indexText, roleText);
+        }
+    }
+
+    private int getHeapLevel(int index) {
+
+        int level = 0;
+        int value = index + 1;
+
+        while (value > 1) {
+            value = value / 2;
+            level++;
+        }
+
+        return level;
+    }
+
+    private void clearHeapTree() {
+
+        if (heapTreePane != null) {
+            heapTreePane.getChildren().clear();
+        }
+
+        if (heapTreeBox != null) {
+            heapTreeBox.setVisible(false);
+            heapTreeBox.setManaged(false);
+        }
+    }
+
+    private void updateHeapSortStatus(SortingStep step) {
+
+        String phase = step.getPhase();
+
+        if (phase.equals("START")) {
+            statusLabel.setText("Heap Sort Started → First Max Heap banega");
+
+        } else if (phase.equals("BUILD_HEAP")) {
+            statusLabel.setText(
+                    "Build Heap phase → root index " + step.getI() +
+                            " se heapify start"
+            );
+
+        } else if (phase.equals("COMPARE_LEFT")) {
+            statusLabel.setText(
+                    "Compare left child → root index " + step.getI() +
+                            " with left child index " + step.getJ()
+            );
+
+        } else if (phase.equals("COMPARE_RIGHT")) {
+            statusLabel.setText(
+                    "Compare right child → current largest index " + step.getI() +
+                            " with right child index " + step.getJ()
+            );
+
+        } else if (phase.equals("HEAPIFY_SWAP")) {
+            statusLabel.setText(
+                    "Heapify swap → index " + step.getI() +
+                            " and index " + step.getJ() +
+                            " swapped to maintain Max Heap"
+            );
+
+        } else if (phase.equals("ROOT_MAX")) {
+            statusLabel.setText(
+                    "Root maximum hai → arr[0] ko last unsorted index " +
+                            step.getJ() + " ke saath swap karenge"
+            );
+
+        } else if (phase.equals("ROOT_SWAP")) {
+            statusLabel.setText(
+                    "Largest element fixed at index " + step.getJ() +
+                            " → sorted part green hoga"
+            );
+
+        } else if (phase.equals("DONE")) {
+            statusLabel.setText("Heap Sort Completed");
+
+        } else {
+            statusLabel.setText("Heap Sort Running");
+        }
     }
 
     private void updateQuickSortStatus(SortingStep step) {
@@ -843,6 +1097,18 @@ public class SortingController {
                     bar.setFill(Color.DARKBLUE);
                 }
 
+            } else if (selectedAlgorithm.equals("Heap Sort")) {
+
+                if (currentVisibleStep != null && currentVisibleStep.getPhase().equals("DONE")) {
+                    bar.setFill(Color.GREEN);
+                } else if (k == compareIndex1 || k == compareIndex2) {
+                    bar.setFill(Color.ORANGE);
+                } else if (isSortedIndex(k, sortedStartIndex)) {
+                    bar.setFill(Color.GREEN);
+                } else {
+                    bar.setFill(Color.DARKBLUE);
+                }
+
             } else {
 
                 if (k == compareIndex1 || k == compareIndex2) {
@@ -885,6 +1151,20 @@ public class SortingController {
 
                 pointerLabel.setText("range");
                 pointerLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: purple;");
+
+            } else if (selectedAlgorithm.equals("Heap Sort")
+                    && currentVisibleStep != null
+                    && k == currentVisibleStep.getI()) {
+
+                pointerLabel.setText("root");
+                pointerLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: orange;");
+
+            } else if (selectedAlgorithm.equals("Heap Sort")
+                    && currentVisibleStep != null
+                    && k == currentVisibleStep.getJ()) {
+
+                pointerLabel.setText("child");
+                pointerLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: red;");
 
             } else if (k == compareIndex1) {
 
@@ -992,6 +1272,10 @@ public class SortingController {
             return index <= sortedStartIndex;
         }
 
+        if (selectedAlgorithm.equals("Heap Sort")) {
+            return index >= sortedStartIndex;
+        }
+
         return false;
     }
 
@@ -1005,6 +1289,14 @@ public class SortingController {
         jLabel.setText("j = -");
 
         clearMergeDetails();
+
+        if (selectedAlgorithm.equals("Heap Sort")) {
+            if (arr != null && arr.length > 0) {
+                drawHeapTree(arr, -1, -1, -1);
+            }
+        } else {
+            clearHeapTree();
+        }
 
         if (arr != null && arr.length > 0) {
             drawBars(arr, -1, -1, -1, -1);
@@ -1031,6 +1323,10 @@ public class SortingController {
 
         if (algorithmName.equals("Quick Sort")) {
             return getQuickSortCode();
+        }
+
+        if (algorithmName.equals("Heap Sort")) {
+            return getHeapSortCode();
         }
 
         return "Code logic not added yet.";
@@ -1217,6 +1513,71 @@ for (currentIndex = low; currentIndex < high; currentIndex++) {
 swap arr[partitionIndex + 1] and arr[high];
 
 return partitionIndex + 1;
+""";
+    }
+
+    private String getHeapSortCode() {
+
+        return """
+Heap Sort Logic:
+
+Heap Sort me hum Max Heap use karte hain.
+
+Main idea:
+
+1. Array ko Max Heap me convert karo
+2. Max Heap me root element sabse bada hota hai
+3. Root ko last unsorted index se swap karo
+4. Last element sorted ho gaya
+5. Heap size kam karo
+6. Root par dobara heapify karo
+
+Index Formula:
+
+leftChildIndex  = 2 * rootIndex + 1;
+rightChildIndex = 2 * rootIndex + 2;
+
+Build Max Heap:
+
+for (int rootIndex = n / 2 - 1; rootIndex >= 0; rootIndex--) {
+
+    heapify(arr, n, rootIndex);
+}
+
+Extract Max:
+
+for (int lastIndex = n - 1; lastIndex > 0; lastIndex--) {
+
+    swap arr[0] and arr[lastIndex];
+
+    heapify(arr, lastIndex, 0);
+}
+
+Heapify Logic:
+
+largestIndex = rootIndex;
+
+leftChildIndex = 2 * rootIndex + 1;
+rightChildIndex = 2 * rootIndex + 2;
+
+if (leftChildIndex < heapSize &&
+    arr[leftChildIndex] > arr[largestIndex]) {
+
+    largestIndex = leftChildIndex;
+}
+
+if (rightChildIndex < heapSize &&
+    arr[rightChildIndex] > arr[largestIndex]) {
+
+    largestIndex = rightChildIndex;
+}
+
+if (largestIndex != rootIndex) {
+
+    swap arr[rootIndex] and arr[largestIndex];
+
+    heapify(arr, heapSize, largestIndex);
+}
 """;
     }
 
