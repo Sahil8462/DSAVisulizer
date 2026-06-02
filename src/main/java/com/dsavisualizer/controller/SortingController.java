@@ -3,6 +3,7 @@ package com.dsavisualizer.controller;
 import java.util.List;
 
 import com.dsavisualizer.algorithm.sorting.BubbleSort;
+import com.dsavisualizer.algorithm.sorting.InsertionSort;
 import com.dsavisualizer.algorithm.sorting.SelectionSort;
 import com.dsavisualizer.model.SortingStep;
 
@@ -63,7 +64,8 @@ public class SortingController {
         algorithmBox = new ComboBox<>();
         algorithmBox.getItems().addAll(
                 "Bubble Sort",
-                "Selection Sort"
+                "Selection Sort",
+                "Insertion Sort"
         );
         algorithmBox.setValue("Bubble Sort");
         algorithmBox.setPrefWidth(250);
@@ -77,13 +79,13 @@ public class SortingController {
         codeArea.setText(getAlgorithmCode(selectedAlgorithm));
         codeArea.setStyle(
                 "-fx-font-family: 'Consolas';" +
-                "-fx-font-size: 12px;" +
-                "-fx-control-inner-background: white;" +
-                "-fx-text-fill: black;" +
-                "-fx-highlight-fill: #d9d9d9;" +
-                "-fx-highlight-text-fill: black;" +
-                "-fx-border-color: #cfcfcf;" +
-                "-fx-border-width: 1;"
+                        "-fx-font-size: 12px;" +
+                        "-fx-control-inner-background: white;" +
+                        "-fx-text-fill: black;" +
+                        "-fx-highlight-fill: #d9d9d9;" +
+                        "-fx-highlight-text-fill: black;" +
+                        "-fx-border-color: #cfcfcf;" +
+                        "-fx-border-width: 1;"
         );
 
         Button generateBtn = new Button("Generate Array");
@@ -269,6 +271,11 @@ public class SortingController {
             SelectionSort selectionSort = new SelectionSort();
             steps = selectionSort.generateSteps(arr);
 
+        } else if (selectedAlgorithm.equals("Insertion Sort")) {
+
+            InsertionSort insertionSort = new InsertionSort();
+            steps = insertionSort.generateSteps(arr);
+
         } else {
 
             statusLabel.setText("This algorithm is not added yet");
@@ -334,6 +341,13 @@ public class SortingController {
 
             updateSelectionSortStatus(step, i, j);
 
+        } else if (selectedAlgorithm.equals("Insertion Sort")) {
+
+            compareIndex1 = i;
+            compareIndex2 = j;
+
+            updateInsertionSortStatus(step, i, j);
+
         } else {
 
             compareIndex1 = -1;
@@ -387,6 +401,25 @@ public class SortingController {
                     "Minimum index = " + i +
                             ", Checking index = " + j +
                             " → Finding smallest element"
+            );
+        }
+    }
+
+    private void updateInsertionSortStatus(SortingStep step, int i, int j) {
+
+        if (i == -1 && j == -1) {
+            statusLabel.setText("Insertion Sort Completed");
+        } else if (step.isSwapped()) {
+            statusLabel.setText(
+                    "Key index = " + i +
+                            ", Checking index = " + j +
+                            " → Bigger element shifted right"
+            );
+        } else {
+            statusLabel.setText(
+                    "Key index = " + i +
+                            ", Insert position = " + j +
+                            " → Key placed in sorted left part"
             );
         }
     }
@@ -448,6 +481,8 @@ public class SortingController {
 
                 if (selectedAlgorithm.equals("Selection Sort")) {
                     pointerLabel.setText("min ↑");
+                } else if (selectedAlgorithm.equals("Insertion Sort")) {
+                    pointerLabel.setText("key ↑");
                 } else {
                     pointerLabel.setText("j ↑");
                 }
@@ -457,6 +492,8 @@ public class SortingController {
             } else if (k == compareIndex2) {
 
                 if (selectedAlgorithm.equals("Selection Sort")) {
+                    pointerLabel.setText("check ↑");
+                } else if (selectedAlgorithm.equals("Insertion Sort")) {
                     pointerLabel.setText("check ↑");
                 } else {
                     pointerLabel.setText("j+1 ↑");
@@ -494,6 +531,10 @@ public class SortingController {
             return index <= sortedStartIndex;
         }
 
+        if (selectedAlgorithm.equals("Insertion Sort")) {
+            return index <= sortedStartIndex;
+        }
+
         return false;
     }
 
@@ -518,6 +559,10 @@ public class SortingController {
 
         if (algorithmName.equals("Selection Sort")) {
             return getSelectionSortCode();
+        }
+
+        if (algorithmName.equals("Insertion Sort")) {
+            return getInsertionSortCode();
         }
 
         return "Code logic not added yet.";
@@ -562,6 +607,27 @@ for (int i = 0; i < n - 1; i++) {
 
         swap arr[i] and arr[minIndex];
     }
+}
+""";
+    }
+
+    private String getInsertionSortCode() {
+
+        return """
+Insertion Sort Logic:
+
+for (int i = 1; i < n; i++) {
+
+    int key = arr[i];
+    int j = i - 1;
+
+    while (j >= 0 && arr[j] > key) {
+
+        arr[j + 1] = arr[j];
+        j--;
+    }
+
+    arr[j + 1] = key;
 }
 """;
     }
