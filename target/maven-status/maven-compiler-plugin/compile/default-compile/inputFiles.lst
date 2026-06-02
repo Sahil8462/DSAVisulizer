@@ -1,6 +1,7 @@
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\BubbleSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\InsertionSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\MergeSort.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\QuickSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\SelectionSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\HomeController.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\SortingController.java

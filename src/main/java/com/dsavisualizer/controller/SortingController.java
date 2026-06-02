@@ -5,6 +5,7 @@ import java.util.List;
 import com.dsavisualizer.algorithm.sorting.BubbleSort;
 import com.dsavisualizer.algorithm.sorting.InsertionSort;
 import com.dsavisualizer.algorithm.sorting.MergeSort;
+import com.dsavisualizer.algorithm.sorting.QuickSort;
 import com.dsavisualizer.algorithm.sorting.SelectionSort;
 import com.dsavisualizer.model.SortingStep;
 
@@ -76,7 +77,8 @@ public class SortingController {
                 "Bubble Sort",
                 "Selection Sort",
                 "Insertion Sort",
-                "Merge Sort"
+                "Merge Sort",
+                "Quick Sort"
         );
         algorithmBox.setValue("Bubble Sort");
         algorithmBox.setPrefWidth(250);
@@ -211,10 +213,7 @@ public class SortingController {
         root.setAlignment(Pos.TOP_CENTER);
         root.setPadding(new Insets(15));
         root.setStyle("-fx-background-color: white;");
-        root.getChildren().addAll(
-                title,
-                mainContent
-        );
+        root.getChildren().addAll(title, mainContent);
 
         return new Scene(root, 1380, 780);
     }
@@ -348,8 +347,12 @@ public class SortingController {
             MergeSort mergeSort = new MergeSort();
             steps = mergeSort.generateSteps(arr);
 
-        } else {
+        } else if (selectedAlgorithm.equals("Quick Sort")) {
 
+            QuickSort quickSort = new QuickSort();
+            steps = quickSort.generateSteps(arr);
+
+        } else {
             statusLabel.setText("This algorithm is not added yet");
             return;
         }
@@ -448,6 +451,17 @@ public class SortingController {
             drawMergeDetails(step);
             updateMergeSortStatus(step);
 
+        } else if (selectedAlgorithm.equals("Quick Sort")) {
+
+            iLabel.setText(step.getPartitionIndex() == -1 ? "partition = -" : "partition = " + step.getPartitionIndex());
+            jLabel.setText(step.getJ() == -1 ? "compare = -" : "compare = " + step.getJ());
+
+            compareIndex1 = step.getPivotIndex();
+            compareIndex2 = step.getJ();
+
+            clearMergeDetails();
+            updateQuickSortStatus(step);
+
         } else {
 
             compareIndex1 = -1;
@@ -465,6 +479,72 @@ public class SortingController {
         });
 
         pause.play();
+    }
+
+    private void updateQuickSortStatus(SortingStep step) {
+
+        String phase = step.getPhase();
+
+        if (phase.equals("START")) {
+            statusLabel.setText("Quick Sort Started → Pivot choose karke partition karenge");
+
+        } else if (phase.equals("CALL")) {
+            statusLabel.setText(
+                    "Quick Sort call → current range [" +
+                            step.getLeft() + ", " + step.getRight() + "]"
+            );
+
+        } else if (phase.equals("PIVOT_SELECTED")) {
+            statusLabel.setText(
+                    "Pivot selected → index " + step.getPivotIndex() +
+                            ", value = " + step.getArrayState()[step.getPivotIndex()]
+            );
+
+        } else if (phase.equals("COMPARE")) {
+
+            int compareIndex = step.getJ();
+            int pivotIndex = step.getPivotIndex();
+
+            statusLabel.setText(
+                    "Compare → arr[" + compareIndex + "] = " +
+                            step.getArrayState()[compareIndex] +
+                            " with pivot arr[" + pivotIndex + "] = " +
+                            step.getArrayState()[pivotIndex]
+            );
+
+        } else if (phase.equals("SWAP_BEFORE")) {
+            statusLabel.setText(
+                    "Smaller than pivot found → swap index " +
+                            step.getSwapIndex1() + " and " + step.getSwapIndex2()
+            );
+
+        } else if (phase.equals("SWAP_AFTER")) {
+            statusLabel.setText("Swap done → smaller element left side me aa gaya");
+
+        } else if (phase.equals("PIVOT_SWAP_BEFORE")) {
+            statusLabel.setText("Partition complete → pivot ko correct position par rakh rahe hain");
+
+        } else if (phase.equals("PIVOT_SWAP_AFTER")) {
+            statusLabel.setText("Pivot placed correctly at index " + step.getPivotIndex());
+
+        } else if (phase.equals("PIVOT_FIXED")) {
+            statusLabel.setText(
+                    "Pivot fixed → index " + step.getPivotIndex() +
+                            " ab apni correct sorted position par hai"
+            );
+
+        } else if (phase.equals("SINGLE")) {
+            statusLabel.setText(
+                    "Single element range → index " + step.getLeft() +
+                            " already sorted hai"
+            );
+
+        } else if (phase.equals("DONE")) {
+            statusLabel.setText("Quick Sort Completed");
+
+        } else {
+            statusLabel.setText("Quick Sort Running");
+        }
     }
 
     private void updateBubbleSortStatus(SortingStep step, int i, int j) {
@@ -746,6 +826,23 @@ public class SortingController {
                     bar.setFill(Color.DARKBLUE);
                 }
 
+            } else if (selectedAlgorithm.equals("Quick Sort")) {
+
+                if (currentVisibleStep != null && currentVisibleStep.getPhase().equals("DONE")) {
+                    bar.setFill(Color.GREEN);
+                } else if (currentVisibleStep != null && k == currentVisibleStep.getPivotIndex()) {
+                    bar.setFill(Color.RED);
+                } else if (currentVisibleStep != null &&
+                        (k == currentVisibleStep.getSwapIndex1() || k == currentVisibleStep.getSwapIndex2())) {
+                    bar.setFill(Color.ORANGE);
+                } else if (k == compareIndex2) {
+                    bar.setFill(Color.YELLOW);
+                } else if (isInsideQuickSortRange(k)) {
+                    bar.setFill(Color.MEDIUMPURPLE);
+                } else {
+                    bar.setFill(Color.DARKBLUE);
+                }
+
             } else {
 
                 if (k == compareIndex1 || k == compareIndex2) {
@@ -763,7 +860,33 @@ public class SortingController {
             Label pointerLabel = new Label(" ");
             pointerLabel.setMinHeight(18);
 
-            if (k == compareIndex1) {
+            if (selectedAlgorithm.equals("Quick Sort")
+                    && currentVisibleStep != null
+                    && k == currentVisibleStep.getPivotIndex()) {
+
+                pointerLabel.setText("pivot");
+                pointerLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: red;");
+
+            } else if (selectedAlgorithm.equals("Quick Sort")
+                    && currentVisibleStep != null
+                    && k == currentVisibleStep.getJ()) {
+
+                pointerLabel.setText("compare");
+                pointerLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: orange;");
+
+            } else if (selectedAlgorithm.equals("Quick Sort")
+                    && currentVisibleStep != null
+                    && k == currentVisibleStep.getPartitionIndex()) {
+
+                pointerLabel.setText("partition");
+                pointerLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: green;");
+
+            } else if (selectedAlgorithm.equals("Quick Sort") && isInsideQuickSortRange(k)) {
+
+                pointerLabel.setText("range");
+                pointerLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: purple;");
+
+            } else if (k == compareIndex1) {
 
                 if (selectedAlgorithm.equals("Selection Sort")) {
                     pointerLabel.setText("min ↑");
@@ -835,6 +958,22 @@ public class SortingController {
         return index >= left && index <= right;
     }
 
+    private boolean isInsideQuickSortRange(int index) {
+
+        if (currentVisibleStep == null) {
+            return false;
+        }
+
+        int left = currentVisibleStep.getLeft();
+        int right = currentVisibleStep.getRight();
+
+        if (left == -1 || right == -1) {
+            return false;
+        }
+
+        return index >= left && index <= right;
+    }
+
     private boolean isSortedIndex(int index, int sortedStartIndex) {
 
         if (sortedStartIndex == -1) {
@@ -888,6 +1027,10 @@ public class SortingController {
 
         if (algorithmName.equals("Merge Sort")) {
             return getMergeSortCode();
+        }
+
+        if (algorithmName.equals("Quick Sort")) {
+            return getQuickSortCode();
         }
 
         return "Code logic not added yet.";
@@ -1024,6 +1167,56 @@ while (j < rightSize) {
     j++;
     k++;
 }
+""";
+    }
+
+    private String getQuickSortCode() {
+
+        return """
+Quick Sort Logic:
+
+Quick Sort divide and conquer algorithm hai.
+
+Main idea:
+
+1. Pivot choose karo
+2. Pivot se chhote elements left side lao
+3. Pivot se bade elements right side rakho
+4. Pivot ko correct position par place karo
+5. Left aur right part ko recursively sort karo
+
+Code Logic:
+
+quickSort(arr, low, high) {
+
+    if (low < high) {
+
+        pivotIndex = partition(arr, low, high);
+
+        quickSort(arr, low, pivotIndex - 1);
+
+        quickSort(arr, pivotIndex + 1, high);
+    }
+}
+
+Partition Logic:
+
+pivot = arr[high];
+partitionIndex = low - 1;
+
+for (currentIndex = low; currentIndex < high; currentIndex++) {
+
+    if (arr[currentIndex] < pivot) {
+
+        partitionIndex++;
+
+        swap arr[partitionIndex] and arr[currentIndex];
+    }
+}
+
+swap arr[partitionIndex + 1] and arr[high];
+
+return partitionIndex + 1;
 """;
     }
 
