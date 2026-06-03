@@ -1,3 +1,4 @@
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\linkedlist\LinkedListOperation.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\searching\BinarySearch.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\searching\LinearSearch.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\BubbleSort.java
@@ -6,9 +7,17 @@ E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\InsertionSort
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\MergeSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\QuickSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\SelectionSort.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\stackqueue\QueueOperation.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\stackqueue\StackOperation.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\HomeController.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\LinkedListController.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\QueueController.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\SearchingController.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\SortingController.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\StackController.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\MainApp.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\model\LinkedListStep.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\model\QueueStep.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\model\SearchingStep.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\model\SortingStep.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\model\StackStep.java

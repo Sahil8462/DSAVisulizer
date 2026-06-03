@@ -35,9 +35,10 @@ public class HomeController {
 
         sortingBtn.setOnAction(e -> openSorting(stage));
         searchingBtn.setOnAction(e -> openSearching(stage));
-        stackBtn.setOnAction(e -> openStack());
-        queueBtn.setOnAction(e -> openQueue());
-        linkedListBtn.setOnAction(e -> openLinkedList());
+        stackBtn.setOnAction(e -> openStack(stage));
+        queueBtn.setOnAction(e -> openQueue(stage));
+        linkedListBtn.setOnAction(e -> openLinkedList(stage));
+
         treeBtn.setOnAction(e -> openTree());
         graphBtn.setOnAction(e -> openGraph());
         recursionBtn.setOnAction(e -> openRecursion());
@@ -94,16 +95,25 @@ public class HomeController {
         stage.setScene(searchingScene);
     }
 
-    private void openStack() {
-        System.out.println("Stack Visualizer Opened");
+    private void openStack(Stage stage) {
+
+        StackController stackController = new StackController();
+        Scene stackScene = stackController.createStackScene(stage);
+        stage.setScene(stackScene);
     }
 
-    private void openQueue() {
-        System.out.println("Queue Visualizer Opened");
+    private void openQueue(Stage stage) {
+
+        QueueController queueController = new QueueController();
+        Scene queueScene = queueController.createQueueScene(stage);
+        stage.setScene(queueScene);
     }
 
-    private void openLinkedList() {
-        System.out.println("Linked List Visualizer Opened");
+    private void openLinkedList(Stage stage) {
+
+        LinkedListController linkedListController = new LinkedListController();
+        Scene linkedListScene = linkedListController.createLinkedListScene(stage);
+        stage.setScene(linkedListScene);
     }
 
     private void openTree() {
