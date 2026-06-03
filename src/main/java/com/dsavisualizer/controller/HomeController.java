@@ -34,7 +34,7 @@ public class HomeController {
         Button recursionBtn = createMenuButton("Recursion Visualizer");
 
         sortingBtn.setOnAction(e -> openSorting(stage));
-        searchingBtn.setOnAction(e -> openSearching());
+        searchingBtn.setOnAction(e -> openSearching(stage));
         stackBtn.setOnAction(e -> openStack());
         queueBtn.setOnAction(e -> openQueue());
         linkedListBtn.setOnAction(e -> openLinkedList());
@@ -56,6 +56,7 @@ public class HomeController {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(30));
+        root.setStyle("-fx-background-color: #f8f9fa;");
         root.getChildren().addAll(title, subtitle, grid);
 
         return new Scene(root, 1000, 650);
@@ -86,8 +87,11 @@ public class HomeController {
         stage.setScene(sortingScene);
     }
 
-    private void openSearching() {
-        System.out.println("Searching Visualizer Opened");
+    private void openSearching(Stage stage) {
+
+        SearchingController searchingController = new SearchingController();
+        Scene searchingScene = searchingController.createSearchingScene(stage);
+        stage.setScene(searchingScene);
     }
 
     private void openStack() {

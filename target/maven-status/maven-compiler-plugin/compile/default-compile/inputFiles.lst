@@ -1,3 +1,5 @@
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\searching\BinarySearch.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\searching\LinearSearch.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\BubbleSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\HeapSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\InsertionSort.java
@@ -5,6 +7,8 @@ E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\MergeSort.jav
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\QuickSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\algorithm\sorting\SelectionSort.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\HomeController.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\SearchingController.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\controller\SortingController.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\MainApp.java
+E:\DSAVisualizer\src\main\java\com\dsavisualizer\model\SearchingStep.java
 E:\DSAVisualizer\src\main\java\com\dsavisualizer\model\SortingStep.java
