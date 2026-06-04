@@ -38,8 +38,8 @@ public class HomeController {
         stackBtn.setOnAction(e -> openStack(stage));
         queueBtn.setOnAction(e -> openQueue(stage));
         linkedListBtn.setOnAction(e -> openLinkedList(stage));
+        treeBtn.setOnAction(e -> openTree(stage));
 
-        treeBtn.setOnAction(e -> openTree());
         graphBtn.setOnAction(e -> openGraph());
         recursionBtn.setOnAction(e -> openRecursion());
 
@@ -116,8 +116,11 @@ public class HomeController {
         stage.setScene(linkedListScene);
     }
 
-    private void openTree() {
-        System.out.println("Tree Visualizer Opened");
+    private void openTree(Stage stage) {
+
+        TreeController treeController = new TreeController();
+        Scene treeScene = treeController.createTreeScene(stage);
+        stage.setScene(treeScene);
     }
 
     private void openGraph() {

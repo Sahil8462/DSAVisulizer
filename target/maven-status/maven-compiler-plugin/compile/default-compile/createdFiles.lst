@@ -2,6 +2,6 @@ com\dsavisualizer\controller\HomeController.class
 com\dsavisualizer\model\SortingStep.class
 com\dsavisualizer\algorithm\sorting\SelectionSort.class
 com\dsavisualizer\controller\SortingController.class
-com\dsavisualizer\algorithm\sorting\InsertionSort.class
 com\dsavisualizer\MainApp.class
 com\dsavisualizer\algorithm\sorting\BubbleSort.class
+com\dsavisualizer\algorithm\sorting\InsertionSort.class
