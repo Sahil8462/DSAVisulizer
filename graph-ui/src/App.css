@@ -1,0 +1,150 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #eef2f5;
+  font-family: Arial, sans-serif;
+}
+
+.page {
+  width: 100vw;
+  height: 100vh;
+  background: #eef2f5;
+  padding: 18px;
+  overflow: hidden;
+}
+
+.topbar {
+  height: 92px;
+  background: white;
+  border-radius: 18px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.topbar h1 {
+  margin: 0;
+  color: #1d3557;
+  font-size: 26px;
+}
+
+.topbar p {
+  margin: 6px 0 0 0;
+  color: #5c677d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actions select,
+.actions button {
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.actions select {
+  background: #f1f3f5;
+  color: #1d3557;
+  border: 2px solid #d9d9d9;
+}
+
+.actions button {
+  background: #2b2d42;
+  color: white;
+}
+
+.main {
+  height: calc(100vh - 128px);
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 16px;
+}
+
+.mapCard {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.sidePanel {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  overflow-y: auto;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.sidePanel h2 {
+  margin: 0 0 12px 0;
+  color: #1d3557;
+  font-size: 22px;
+}
+
+.infoBox {
+  background: #f8f9fa;
+  border: 2px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+  color: #1d3557;
+}
+
+.infoBox b {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.infoBox span {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.explanation {
+  background: #edf6f9;
+}
+
+.real {
+  background: #fff3b0;
+}
+
+.distanceGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-weight: 800;
+}
+
+.react-flow__node-default {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.danger {
+  background: #e63946;
+  color: white;
+  border-color: #e63946;
+}
+
+.legend span {
+  display: block;
+  margin-top: 4px;
+}

@@ -14,10 +14,10 @@ public class HomeController {
     public Scene createHomeScene(Stage stage) {
 
         Label title = new Label("DSA Visualizer Platform");
-        title.setStyle("-fx-font-size: 32px; -fx-font-weight: bold;");
+        title.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2b2d42;");
 
         Label subtitle = new Label("Learn Data Structures and Algorithms with Visual Animation");
-        subtitle.setStyle("-fx-font-size: 16px;");
+        subtitle.setStyle("-fx-font-size: 16px; -fx-text-fill: #555;");
 
         GridPane grid = new GridPane();
         grid.setHgap(20);
@@ -39,8 +39,7 @@ public class HomeController {
         queueBtn.setOnAction(e -> openQueue(stage));
         linkedListBtn.setOnAction(e -> openLinkedList(stage));
         treeBtn.setOnAction(e -> openTree(stage));
-
-        graphBtn.setOnAction(e -> openGraph());
+        graphBtn.setOnAction(e -> openGraph(stage));
         recursionBtn.setOnAction(e -> openRecursion());
 
         grid.add(sortingBtn, 0, 0);
@@ -70,12 +69,12 @@ public class HomeController {
         button.setPrefSize(220, 90);
         button.setStyle(
                 "-fx-font-size: 16px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-background-radius: 15;" +
-                        "-fx-border-radius: 15;" +
-                        "-fx-background-color: #2b2d42;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-cursor: hand;"
+                "-fx-font-weight: bold;" +
+                "-fx-background-radius: 15;" +
+                "-fx-border-radius: 15;" +
+                "-fx-background-color: #2b2d42;" +
+                "-fx-text-fill: white;" +
+                "-fx-cursor: hand;"
         );
 
         return button;
@@ -123,11 +122,15 @@ public class HomeController {
         stage.setScene(treeScene);
     }
 
-    private void openGraph() {
-        System.out.println("Graph Visualizer Opened");
+    private void openGraph(Stage stage) {
+
+        GraphController graphController = new GraphController();
+        Scene graphScene = graphController.createGraphScene(stage);
+        stage.setScene(graphScene);
     }
 
     private void openRecursion() {
+
         System.out.println("Recursion Visualizer Opened");
     }
 }

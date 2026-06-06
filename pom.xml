@@ -38,17 +38,13 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        <dependency>
-    <groupId>org.graphstream</groupId>
-    <artifactId>gs-core</artifactId>
-    <version>2.0</version>
-</dependency>
 
-<dependency>
-    <groupId>org.graphstream</groupId>
-    <artifactId>gs-ui-javafx</artifactId>
-    <version>2.0</version>
-</dependency>
+        <!-- JavaFX WebView: React / HTML / CSS / JS ko JavaFX app ke andar load karne ke liye -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
 
     </dependencies>
 
